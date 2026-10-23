@@ -8,14 +8,10 @@ import type {
   ModelOption,
 } from '../types';
 
-// Production backend hosted on Render
-const RENDER_BACKEND_URL = 'https://mockup-studio-ai.onrender.com';
-
-// Use Render in production and local Vite proxy in development
-
+// Render backend API URL
 const API_BASE_URL = 'https://mockup-studio-ai.onrender.com/api';
 
-
+// Axios configuration
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 130_000,
@@ -95,9 +91,11 @@ export async function generateImage(
     formData.append('debug', String(params.debug));
   }
 
-  const response = await api.post<
-    ApiResponse<GenerationResult>
-  >('/generate', formData);
+  // Send image generation request to Render
+  const response = await api.post<ApiResponse<GenerationResult>>(
+    '/generate',
+    formData
+  );
 
   if (!response.data.success || !response.data.data) {
     throw new Error(
@@ -108,7 +106,7 @@ export async function generateImage(
   return response.data.data;
 }
 
-// Backend health check
+// Check backend health
 export async function getHealth(): Promise<HealthStatus> {
   const response = await api.get<ApiResponse<HealthStatus>>(
     '/health'
@@ -121,7 +119,7 @@ export async function getHealth(): Promise<HealthStatus> {
   return response.data.data;
 }
 
-// Available AI models
+// Get available AI models
 export async function getModels(): Promise<ModelOption[]> {
   const response = await api.get<
     ApiResponse<{ models: ModelOption[] }>
@@ -134,7 +132,7 @@ export async function getModels(): Promise<ModelOption[]> {
   return response.data.data.models;
 }
 
-// API error handling
+// Handle API errors
 export function extractErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
     const data = error.response?.data as
