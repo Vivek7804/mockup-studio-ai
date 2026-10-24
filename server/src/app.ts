@@ -10,6 +10,8 @@ import { healthRoutes } from './routes/health.routes';
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
+// Render reverse proxy
+app.set('trust proxy', 1);
 
 // Security headers
 app.use(
